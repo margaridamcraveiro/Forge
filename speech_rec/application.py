@@ -37,8 +37,8 @@ def extract_features(path):
 
 def initiateIntervals():
     """returns lower, upper"""
-    feat1 = extract_features("../sounds/harvard.wav")
-    feat2 = extract_features("../sounds/jeff.wav")
+    feat1 = extract_features("sounds/harvard.wav")
+    feat2 = extract_features("sounds/jeff.wav")
 
 
     df = pd.DataFrame([feat1, feat2])

@@ -2,17 +2,18 @@ import streamlit as st
 import sys, os
 import google.generativeai as genai
 import utils.prompts as pmt  # keeps your augmented prompt
-from speech_rec import application
 from datetime import datetime
 import pathlib
-from typing import List, Dict 
+from typing import List, Dict
 from faster_whisper import WhisperModel
-
 
 # to allow import
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
+
+from speech_rec import application
+
 
 #--------- gemini ----------#
 
@@ -81,7 +82,7 @@ def send_to_gemini(
 
 
 
-
+# -------------- UX ------------------ #
 st.title("Evaluate your answer")
 
 st.write("Record your answer and listen back to it.")
@@ -107,11 +108,8 @@ if audio_file is not None:
         # Choose a model: tiny, base, small, medium, large-v3
         model = WhisperModel("small", device="cpu")  # use "cuda" if you have a GPU
 
-        # Replace this with your actual WAV file path
-        AUDIO_FILE = "your_audio.wav"
-
         # Transcribe
-        segments, info = model.transcribe(AUDIO_FILE, beam_size=5)
+        segments, info = model.transcribe(filename, beam_size=5)
 
         # Combine text from all segments
         transcription = "".join(segment.text for segment in segments)
@@ -119,6 +117,7 @@ if audio_file is not None:
         # prepare your augmented prompt
         perfected_prompt = pmt.getEvaluationPrompt(is_confident, st.session_state.question) + transcription
         
+        st.session_state.messages.append({"role": "user", "content": perfected_prompt})
         genai = get_client()
         assistant_reply = send_to_gemini(
             genai=genai,

@@ -78,11 +78,6 @@ st.set_page_config(page_title="Streamlit + Gemini Chatbot", page_icon="💬", la
 
 st.title("💬 Streamlit Chatbot (Gemini)")
 
-# Optional in-page navigation button (kept if you like it)
-if st.button("Evaluate your answer"):
-    # Streamlit >= 1.37
-    st.switch_page("pages/2_answer.py")
-
 # Initialize session state
 init_state()
 

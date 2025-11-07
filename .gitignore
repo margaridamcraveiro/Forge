@@ -4,3 +4,6 @@ include/
 forge/
 __pycache__/
 website/__pycache__/
+recordings/
+speech_rec/__init__.py
+secrets.toml

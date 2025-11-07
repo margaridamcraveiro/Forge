@@ -12,6 +12,9 @@ source forge/bin/activate
 pip install fastapi
 pip install uvicorn
 pip install streamlit
+pip install librosa
+pip install matplotlib
+pip install numpy
 
 
 ------

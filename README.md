@@ -15,6 +15,7 @@ pip install streamlit
 pip install librosa
 pip install matplotlib
 pip install numpy
+pip install audiorecorder
 
 
 ------

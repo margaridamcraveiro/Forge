@@ -3,7 +3,7 @@ import streamlit as st
 import google.generativeai as genai
 from typing import List, Dict
 
-import utils.prompts as pmt  # keeps your augmented prompt
+import website.utils.prompts as pmt  # keeps your augmented prompt
 
 # -------------------- Defaults (since no settings sidebar) --------------------
 DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant."

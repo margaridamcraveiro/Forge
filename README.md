@@ -24,4 +24,7 @@ uvicorn api:app --reload
 ## Run website
 streamlit run home.py
 
-## make requests
+
+------
+## new
+pip install -r requirements.txt

@@ -22,7 +22,7 @@ pip install numpy
 uvicorn api:app --reload
 
 ## Run website
-streamlit run home.py
+streamlit run app.py
 
 
 ------

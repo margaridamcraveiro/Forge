@@ -3,7 +3,7 @@ import streamlit as st
 import google.generativeai as genai
 from typing import List, Dict
 
-import website.utils.prompts as pmt  # keeps your augmented prompt
+import utils.prompts as pmt  # keeps your augmented prompt
 
 # -------------------- Defaults (since no settings sidebar) --------------------
 DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant."
@@ -72,18 +72,6 @@ def send_to_gemini(
 # ---- UI ----------------------------------------------------------------------
 
 st.set_page_config(page_title="Streamlit + Gemini Chatbot", page_icon="💬", layout="centered")
-
-# Sidebar = PAGES ONLY
-with st.sidebar:
-    st.title("📄 Pages")
-    # Use root-relative paths; requires running from app root: `streamlit run app.py`
-    st.page_link("1_question.py", label="Question", icon="❓")
-    st.page_link("2_answer.py", label="Evaluate Answer", icon="💬")
-    st.divider()
-    # Optional: quick actions
-    if st.button("🧹 Clear chat"):
-        st.session_state.messages = [{"role": "system", "content": DEFAULT_SYSTEM_PROMPT}]
-        st.rerun()
 
 st.title("💬 Streamlit Chatbot (Gemini)")
 

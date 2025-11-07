@@ -4,6 +4,9 @@ import google.generativeai as genai
 from typing import List, Dict
 
 import utils.prompts as pmt  # keeps your augmented prompt
+# Initialize keys if not already in session_state
+if "question" not in st.session_state:
+    st.session_state.question = ""
 
 # -------------------- Defaults (since no settings sidebar) --------------------
 DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant."
@@ -112,4 +115,5 @@ if user_input:
         st.markdown(assistant_reply)
 
     if assistant_reply:
+        st.session_state.question = assistant_reply
         st.session_state.messages.append({"role": "assistant", "content": assistant_reply})

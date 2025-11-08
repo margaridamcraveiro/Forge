@@ -5,6 +5,45 @@ import utils.prompts as pmt  # keeps your augmented prompt
 from datetime import datetime
 import pathlib
 from faster_whisper import WhisperModel
+from gtts import gTTS
+from io import BytesIO
+import re
+
+def clean_for_tts(text: str) -> str:
+    """Strip Markdown/formatting so TTS only reads the meaningful content."""
+
+    # 1) Remove fenced code blocks ```...```
+    text = re.sub(r"```.*?```", " ", text, flags=re.DOTALL)
+
+    # 2) Remove inline code backticks `like this`
+    text = text.replace("`", "")
+
+    # 3) Remove Markdown headings: "# Title", "## Subtitle", etc.
+    text = re.sub(r"^\s*#{1,6}\s*", "", text, flags=re.MULTILINE)
+
+    # 4) Remove blockquote markers "> "
+    text = re.sub(r"^\s*>\s*", "", text, flags=re.MULTILINE)
+
+    # 5) Remove list markers ("- ", "* ", "+ ", "1. ", "2) ", etc.) at line start
+    text = re.sub(r"^\s*[-*+]\s+", "", text, flags=re.MULTILINE)
+    text = re.sub(r"^\s*\d+[\.\)]\s+", "", text, flags=re.MULTILINE)
+
+    # 6) Unwrap **bold** and __bold__
+    text = re.sub(r"(\*\*|__)(.+?)\1", r"\2", text)
+
+    # 7) Unwrap *italic* and _italic_
+    text = re.sub(r"(\*|_)([^*_]+?)\1", r"\2", text)
+
+    # 8) Normalize fancy quotes to normal ones (optional but helps TTS)
+    text = text.replace("“", '"').replace("”", '"').replace("’", "'").replace("‘", "'")
+
+    # 9) Collapse extra blank lines / spaces
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+
+    return text.strip()
+
+
 
 # to allow import of speech_rec
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -18,7 +57,7 @@ DEFAULT_MODEL_NAME = "gemini-2.5-flash"
 DEFAULT_TEMPERATURE = 0.7
 # -------------------------------------------------
 
-
+ 
 def get_client():
     """
     Initialize the Gemini client from Streamlit secrets or environment variable.
@@ -88,5 +127,14 @@ if audio_file is not None:
         except Exception as e:
             assistant_reply = f"❗Error calling Gemini API: {e}"
 
-        with st.chat_message("assistant"):
-            st.markdown(assistant_reply)
+        # with st.chat_message("assistant"):
+        #     st.markdown(assistant_reply)  # full Markdown, for display
+
+        if assistant_reply:
+            spoken_text = clean_for_tts(assistant_reply)
+            if spoken_text:
+                tts = gTTS(spoken_text, lang="en")  # or "pt", "pt-pt", etc.
+                audio_bytes = BytesIO()
+                tts.write_to_fp(audio_bytes)
+                audio_bytes.seek(0)
+                st.audio(audio_bytes, format="audio/mp3")

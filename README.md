@@ -18,6 +18,7 @@ pip install numpy
 pip install audiorecorder
 pip install whisper
 pip install faster-whisper soundfile
+pip install gTTS
 
 
 ------

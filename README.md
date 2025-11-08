@@ -1,4 +1,8 @@
 # Forge
+Our project wants to help people prepare to their high stakes conversations: job interviews, project discussions, and everything where what you say is not only what matters, but also HOW you say it.  
+You ask our agent to give you a question, and then you answer it. The tone of your voice is then evaluated by our algorithm, and you receive feedback on the content of your answer, as well as the tone.
+
+
 
 ## activation of the environment
 ### Windows

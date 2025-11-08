@@ -1,13 +1,26 @@
 import streamlit as st
 import sys, os
 import google.generativeai as genai
-import utils.prompts as pmt  # keeps your augmented prompt
+import utils.prompts as pmt
 from datetime import datetime
 import pathlib
 from faster_whisper import WhisperModel
 from gtts import gTTS
 from io import BytesIO
 import re
+
+
+# to allow import of speech_rec
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from speech_rec import application
+
+# ---------------- Gemini defaults ----------------
+DEFAULT_MODEL_NAME = "gemini-2.5-flash"
+DEFAULT_TEMPERATURE = 0.7
+# -------------------------------------------------
 
 def clean_for_tts(text: str) -> str:
     """Strip Markdown/formatting so TTS only reads the meaningful content."""
@@ -44,20 +57,6 @@ def clean_for_tts(text: str) -> str:
     return text.strip()
 
 
-
-# to allow import of speech_rec
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-if ROOT not in sys.path:
-    sys.path.insert(0, ROOT)
-
-from speech_rec import application
-
-# ---------------- Gemini defaults ----------------
-DEFAULT_MODEL_NAME = "gemini-2.5-flash"
-DEFAULT_TEMPERATURE = 0.7
-# -------------------------------------------------
-
- 
 def get_client():
     """
     Initialize the Gemini client from Streamlit secrets or environment variable.

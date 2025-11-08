@@ -54,22 +54,38 @@ def send_to_gemini(
 ) -> str:
     """
     Send messages to Gemini and return the assistant's reply.
+    Converts internal roles ("assistant") to Gemini roles ("model").
     """
-    history = [
-        {"role": msg["role"], "parts": [msg["content"]]}
-        for msg in messages
-        if msg["role"] in ["user", "assistant"]
-    ]
+    history = []
+    for msg in messages:
+        role = msg["role"]
+
+        if role == "user":
+            gemini_role = "user"
+        elif role in ("assistant", "model"):  # our internal "assistant" → Gemini "model"
+            gemini_role = "model"
+        else:
+            # skip system or any other custom roles
+            continue
+
+        history.append({"role": gemini_role, "parts": [msg["content"]]})
 
     try:
         model = genai.GenerativeModel(model_name)
         chat = model.start_chat(history=history)
-        response = chat.send_message(messages[-1]["content"], generation_config={"temperature": temperature})
+
+        # last message content (already includes your augmented prompt)
+        last_user_content = messages[-1]["content"]
+        response = chat.send_message(
+            last_user_content,
+            generation_config={"temperature": temperature},
+        )
         reply = response.text or ""
     except Exception as e:
         reply = f"❗Error calling Gemini API: {e}"
 
     return reply
+
 
 
 # ---- UI ----------------------------------------------------------------------
@@ -109,6 +125,11 @@ if user_input:
     with st.chat_message("assistant"):
         st.markdown(assistant_reply)
 
+    # Estava a usar a resposta antiga do modelo, não ao que o user escreveu, por isso mudei para user_input
     if assistant_reply:
-        st.session_state.question = assistant_reply
+        # store the user's original question (not the assistant's reply)
+        st.session_state.question = user_input.strip()
+
+        # keep chat history
         st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
+

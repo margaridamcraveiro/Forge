@@ -25,7 +25,8 @@ pip install faster-whisper soundfile
 uvicorn api:app --reload
 
 ## Run website
-streamlit run app.py
+streamlit run website/app.py
+# give me a question help in my job interview
 
 
 ------
